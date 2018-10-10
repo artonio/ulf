@@ -33,7 +33,7 @@ class Tabs(Gtk.Notebook):
     def on_close_clicked(self, tab_label, notebook, tab_widget):
         self.remove_page(notebook.page_num(tab_widget))
 
-    def createContent(self, drawer_label, drawer_icon_file_name, is_new_file):
+    def createContent(self, drawer_label: str, drawer_icon_file_name: str, is_new_file: bool):
         return ScrolledWindowIconView(self.targets, drawer_label, drawer_icon_file_name, is_new_file)
 
 

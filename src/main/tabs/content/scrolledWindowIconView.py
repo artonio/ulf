@@ -27,3 +27,22 @@ class ScrolledWindowIconView(Gtk.ScrolledWindow):
         self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.ALWAYS)
 
         self.icon_view.drag_dest_set_target_list(targets)
+
+        self.icon_view.iconSize = 48
+        self.icon_view.fontSize = 9
+        self.icon_view.itemWidth = 48
+        self.icon_view.drawerType = "Horizontal"
+        self.icon_view.numColumns = 3
+
+        self.icon_view.drawerSettings['drawerName'] = drawer_name
+        self.icon_view.drawerSettings['iconSize'] = self.icon_view.iconSize
+        self.icon_view.drawerSettings['fontSize'] = self.icon_view.fontSize
+        self.icon_view.drawerSettings['itemWidth'] = self.icon_view.itemWidth
+        self.icon_view.drawerSettings['drawerType'] = [self.icon_view.drawerType]
+        self.icon_view.drawerSettings['appList'] = []
+
+        self.icon_view.set_font()
+        self.icon_view.set_item_width(self.icon_view.itemWidth)
+        self.add(self.icon_view)
+
+
