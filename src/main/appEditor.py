@@ -1,11 +1,16 @@
 import gi
 
+from src.main import utils
 from src.main.dialogs.newDrawerDialog import NewDrawerDialog
 from src.main.tabs.tabsView import Tabs
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 from typing import ClassVar
+import sys, os
+
+LOCAL_APP_DIR = os.getenv('HOME') + "/.local/share/applications/"
+CURR_WORK_DIR = os.getcwd()
 
 
 class MainWindow(Gtk.Window):
@@ -13,19 +18,30 @@ class MainWindow(Gtk.Window):
     toolbar: ClassVar[Gtk.Toolbar]
     notebook: ClassVar[Tabs]
 
-    def __init__(self):
+    def __init__(self, edit_drawer_name: str):
         Gtk.Window.__init__(self, title="LauncherFolders Editor")
         self.set_position(Gtk.WindowPosition.CENTER)
         self.set_decorated(True)
         self.set_opacity(0.9)
 
+        screen = Gdk.Screen.get_default()
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_path(CURR_WORK_DIR + '/theme.css')
+
+        context = Gtk.StyleContext()
+        context.add_provider_for_screen(screen, css_provider,
+                                        Gtk.STYLE_PROVIDER_PRIORITY_USER)
+
         self.toolbar = self.createToolbar()
         self.notebook = Tabs(self)
-        self.notebook.createPage('Test', '', False)
+        if edit_drawer_name:
+            drawer_file = LOCAL_APP_DIR + edit_drawer_name + ".desktop"
+            drawer_name, drawer_icon, exec_path = utils.getAppInfo(drawer_file)
+            self.notebook.createPage(drawer_name, drawer_icon, False)
 
         hbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
 
-        hbox.pack_start(self.toolbar, True, True, 0)
+        hbox.pack_start(self.toolbar, False, True, 0)
         hbox.pack_end(self.notebook, True, True, 0)
         self.add(hbox)
 
@@ -87,8 +103,13 @@ class MainWindow(Gtk.Window):
         new_drawer_dialog.destroy()
 
 
-
-window = MainWindow()
-window.connect("destroy", Gtk.main_quit)
-window.show_all()
-Gtk.main()
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        editDrawerName = sys.argv[1]
+    else:
+        editDrawerName = None
+    window = MainWindow(editDrawerName)
+    window.set_default_size(400, 200)
+    window.connect("destroy", Gtk.main_quit)
+    window.show_all()
+    Gtk.main()
